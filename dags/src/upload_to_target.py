@@ -50,11 +50,16 @@ def process_and_upload_to_s3(data, target):
         s3_path = os.path.join(folder_path, file_name)
 
         try:
+            body = {
+                'base_code': data.get('base_code', 'USD'), 
+                'rates': data.get('rates', {}), 
+                'data_load_datetime_epoch': data.get('time_last_update_unix', None)}
+            
             # Uploading data to S3
             s3_client.put_object(
                 Bucket=target,
                 Key=s3_path,
-                Body=json.dumps(data)  # Assuming you're storing the message as JSON
+                Body=json.dumps(body)  # Assuming you're storing the message as JSON
             )
             logger.info(f"Uploaded to S3: {s3_path}")
         except Exception as e:
